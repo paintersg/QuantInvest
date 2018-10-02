@@ -1,0 +1,2 @@
+# QuantInvest
+investment strategies
