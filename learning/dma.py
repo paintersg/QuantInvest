@@ -1,6 +1,7 @@
 # double moving average
 import pandas as pd
 import numpy as np
+import tushare as ts
 
 # index与日期对应关系
 # 68   <=>  2013/04/19
@@ -8,16 +9,31 @@ import numpy as np
 # 1333 <=>  2018/06/29
 
 class dma(object):
-  def __init__(self, startDate=None, endDate=None):
+  def __init__(self, reserveDate=None, startDate=None, endDate=None, autoDownload=False, shareCode='399300'):
     super(dma, self).__init__()
+    self.reserveDate = reserveDate
     self.startDate = startDate
     self.endDate = endDate
-    # 数据表
-    self.dataframe = None
+    self.shareCode = shareCode
+
     # startDate的index
     self.startIndex = None
+
+    # 数据表
+    self.dataframe = None
+    if autoDownload:
+      self.dataframe = ts.get_k_data(
+          self.shareCode, index=True, start=self.reserveDate, end=self.endDate)
+      self.dataframe.to_csv('./data/' + 
+                            self.shareCode + '_' + 
+                            self.reserveDate[2:].replace('-', '') + '_' +
+                            self.endDate[2:].replace('-', '') + '.csv')
+      self.startIndex = self.dataframe[(
+          self.dataframe.date == self.startDate)].index.tolist()[0]
+
     # 本金
     # self.capital = None
+
     # 短期均线中，短期的可选长度
     self.shortTermLengths = [1, 2, 3, 5, 8, 13, 21, 34]
     # 长期均线中，长期的可选长度
@@ -45,11 +61,14 @@ class dma(object):
     shortTermAvg = self.calAvgArray(s)
     longTermAvg = self.calAvgArray(l)
 
-    profitRate = 0
+    # 假设本金10万
+    rawCapital = 100000
+    oldCapital = rawCapital
+    
+    profit = 0
     tempInprice = -1
     
     # 根据双均线进行交易，计算总收益率profitRate
-    # 这里假设卖出股票后获得的盈利不再用于购买股票，本金始终不变
     for day in range(len(shortTermAvg)):
       if day == 0:
         continue
@@ -57,7 +76,10 @@ class dma(object):
         if shortTermAvg[day] > longTermAvg[day] and shortTermAvg[day-1] <= longTermAvg[day-1] and tempInprice == -1:
           tempInprice = self.dataframe.at[day+self.startIndex, 'close']
         elif shortTermAvg[day] <= longTermAvg[day] and shortTermAvg[day-1] > longTermAvg[day-1] and tempInprice != -1:
-          profitRate = profitRate + (self.dataframe.at[day+self.startIndex, 'close'] - tempInprice)/tempInprice
+          newCapital = oldCapital/tempInprice * \
+              self.dataframe.at[day+self.startIndex, 'close']
+          profit = profit + newCapital - oldCapital
+          oldCapital = newCapital
           tempInprice = -1
         else:
           continue
@@ -65,6 +87,7 @@ class dma(object):
     # 如果到endDate还没有卖出，不需要卖出全部股票
     # 因为此时卖出导致的盈亏并非双均线的结果
     
+    profitRate = profit/rawCapital
     # 4.5年
     annualProfitRate = profitRate/4.5
     return annualProfitRate
@@ -87,8 +110,8 @@ class dma(object):
 
 if __name__ == '__main__':
   # 2013-04-19到2013-12-30的是备用数据，用于计算双均线
-  model = dma(startDate='2013/12/31', endDate='2018/6/29')
-  model.readData('./data/399300_130419_180630.csv')
+  model = dma(reserveDate='2013-04-19', startDate='2013-12-31', endDate='2018-06-30', autoDownload=True)
+  # model.readData('./data/399300_130419_180630.csv')
   model.calProfitTable()
   print(model.profitTable)
   print('finish')
