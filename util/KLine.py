@@ -16,13 +16,16 @@ def compareKLine(df1, df2, name1, name2):
   
   plt.show()
 
+# '002304' '600436'  499
+# '600519' '000538'  2540.896
+
 def main():
-  share1 = '002304'
-  share2 = '600436'
+  share1 = '600436'
+  share2 = '002304'
   df1 = pd.DataFrame.from_csv(
-      'e:/myRepertories/QuantInvest/hs300/'+share1+'_080101_180630.csv')
+      '../hs300/'+share1+'_080101_180630.csv')
   df2 = pd.DataFrame.from_csv(
-      'e:/myRepertories/QuantInvest/hs300/'+share2+'_080101_180630.csv')
+      '../hs300/'+share2+'_080101_180630.csv')
   if df1.shape[0] > df2.shape[0]:
     compareKLine(df1, df2, share1, share2)
   else:

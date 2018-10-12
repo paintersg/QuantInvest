@@ -110,8 +110,8 @@ class dma(object):
 
 if __name__ == '__main__':
   # 2013-04-19到2013-12-30的是备用数据，用于计算双均线
-  # model = dma(reserveDate='2013-04-19', startDate='2013-12-31', endDate='2018-06-30', autoDownload=True)
-  model = dma(reserveDate='2010-04-19', startDate='2010-12-31', endDate='2015-06-30', autoDownload=True)
+  model = dma(reserveDate='2013-04-19', startDate='2013-12-31', endDate='2018-06-30', autoDownload=True)
+  # model = dma(reserveDate='2010-04-19', startDate='2010-12-31', endDate='2015-06-30', autoDownload=True)
 
   # model.readData('./data/399300_130419_180630.csv')
   model.calProfitTable()
