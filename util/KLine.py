@@ -20,8 +20,8 @@ def compareKLine(df1, df2, name1, name2):
 # '600519' '000538'  2540.896
 
 def main():
-  share1 = '600436'
-  share2 = '002304'
+  share1 = '600369'
+  share2 = '000063'
   df1 = pd.DataFrame.from_csv(
       '../hs300/'+share1+'_080101_180630.csv')
   df2 = pd.DataFrame.from_csv(

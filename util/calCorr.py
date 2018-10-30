@@ -29,14 +29,14 @@ def getData(path, minLength = 1000):
 
 
 def main():
-  minLength = 2000
+  minLength = 500
   data, shareList = getData('e:/myRepertories/QuantInvest/hs300', minLength)
   
-  covMatrix = np.cov(data)
+  corrMatrix = np.corrcoef(data)
 
-  covDF = pd.DataFrame(data=covMatrix, index=shareList, columns=shareList)
-  print(covDF)
-  covDF.to_csv('../hs300cov_'+str(minLength)+'.csv')
+  corrDF = pd.DataFrame(data=corrMatrix, index=shareList, columns=shareList)
+  print(corrDF)
+  corrDF.to_csv('../hs300cov_'+str(minLength)+'.csv')
 
 if __name__ == '__main__':
   main()

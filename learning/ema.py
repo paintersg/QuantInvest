@@ -1,8 +1,15 @@
 # Exponential Moving Average
 # used to predict share price
+###########
+# useless #
+###########
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import warnings
+
+warnings.filterwarnings('ignore')
 
 def getData(path):
   df = pd.DataFrame.from_csv(path)
@@ -84,19 +91,20 @@ def saveResult(trueData, run_avg_predictions, diff_avg_predictions, final_predic
   df = pd.DataFrame(data, columns=['TRUE', 'PREDICTION','RUNNING AVG', 'DIFF RUNNING AVG', 'MSE', 'TREND ACCURACY'])
   df.to_csv('./emaResult.csv')
 
-def findBestParameters():
+
+def findBestParameters(low_prices):
   bestacc = 0
   bestdacay = 0
   bestdiff_decay = 0
-  for decay in range(1, 10):
-    for diff_decay in range(1, 10):
+  for decay in range(100):
+    for diff_decay in range(100):
       run_avg_predictions, diff_avg_predictions, final_predictions, mse_errors, trendAccuracy = predict(
-          low_prices, decay/10.0, diff_decay/10.0)
+          low_prices, decay/100.0, diff_decay/100.0)
       temp = (np.sum(trendAccuracy)/len(trendAccuracy))
       if temp > bestacc:
         bestacc = temp
-        bestdacay = decay/10.0
-        bestdiff_decay = diff_decay/10.0
+        bestdacay = decay/100.0
+        bestdiff_decay = diff_decay/100.0
 
   print('best accuracy: ', bestacc)
   print('best decay: ', bestdacay)
@@ -104,10 +112,23 @@ def findBestParameters():
   return bestdacay, bestdiff_decay, bestacc
 
 def main():
-  path = '../hs300/000060_080101_180630.csv'
+  path = '../hs300/600809_080101_180630.csv'
   low_prices, train_data, test_data = getData(path)
 
-  # bestdacay, bestdiff_decay, bestacc = findBestParameters()
+  # bestdacay, bestdiff_decay, bestacc = findBestParameters(low_prices)
+
+  # rootPath = '../hs300'
+  # fileNames = os.listdir(rootPath)
+  # nonezero = 0
+  # for name in fileNames:
+  #   print(name)
+  #   low_prices, train_data, test_data = getData(rootPath+'/'+name)
+  #   bestdacay, bestdiff_decay, bestacc = findBestParameters(low_prices)
+  #   if bestdacay != 0 or bestdiff_decay != 0:
+  #     print(bestdacay, bestdiff_decay)
+  #     nonezero += 1
+
+  # print(nonezero)
 
   # predict with best parameters
   run_avg_predictions, diff_avg_predictions, final_predictions, mse_errors, trendAccuracy = predict(
