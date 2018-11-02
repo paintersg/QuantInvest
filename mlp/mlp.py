@@ -36,8 +36,9 @@ def getData(shareCode, featureNum = 10, dayNum = 500):
     close_prices = close_prices[-500:]
     sample_num = len(close_prices) - featureNum
     rdarray = np.random.permutation(range(sample_num))
+    tempMax = max(close_prices)
     for index in rdarray:
-      data.append(close_prices[index: index + featureNum])
+      data.append([x for x in close_prices[index: index + featureNum]])
       if close_prices[index + featureNum] >= close_prices[index + featureNum-1]:
         label.append(1)
       else:
@@ -49,9 +50,9 @@ def getData(shareCode, featureNum = 10, dayNum = 500):
   df = pd.DataFrame.from_csv('../hs300/'+shareCode+'_080101_180630.csv')
   close_prices = df.loc[-dayNum:, 'close'].as_matrix()
   close_prices = close_prices[-500:]
-
+  tempMax = max(close_prices)
   for index in range(len(close_prices)-featureNum):
-    validateData.append(close_prices[index: index + featureNum])
+    validateData.append([x for x in close_prices[index: index + featureNum]])
     if close_prices[index + featureNum] >= close_prices[index + featureNum-1]:
       validateLabel.append(1)
     else:
